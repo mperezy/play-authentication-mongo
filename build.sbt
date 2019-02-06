@@ -1,4 +1,4 @@
-name := """reactive-auth"""
+name := """play-authentication-mongo"""
 
 version := "1.0-SNAPSHOT"
 

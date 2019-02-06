@@ -23,29 +23,17 @@ object Sessions extends Controller with LoginLogout with AuthConfigImpl {
     ).removingFromSession("rememberme"))
   }
 
-  def authenticate = Action.async(parse.json) {
-    implicit request => println(s"auth-request: ${request}")
-      println(s"auth-request.body: ${request.body}")
-      println(s"auth-request.body.validate[Account]: ${request.body.validate[Account]}")
-      request.body.validate[Account].map {
-      profil: Account => {
-
-        Account.authenticate(profil.email, profil.password) match {
-          case aCC => {
+  def authenticate = Action.async { implicit request => 
+      SignInForm.form.bindFromRequest.fold(
+        formWithErrors => Future.successful(BadRequest(views.html.signIn(formWithErrors))),
+        user => Account.authenticate(user.get.email, user.get.password) match {
+          case account => {
             //TODO always set cookie to be refactored
             val req = request.copy(tags = request.tags + ("rememberme" -> "true"))
-            gotoLoginSucceeded(aCC.get._id)(req, defaultContext).map(_.withSession("rememberme" -> "true"))
+            gotoLoginSucceeded(account.get._id)(req, defaultContext).map(_.withSession("rememberme" -> "true"))
           }
-          case _ => Future.successful(BadRequest(Json.obj("result" -> "could not get user from db")))
+          case _ => Future.successful(BadRequest(Json.obj("result" -> "Couldn't get user from db")))
         }
-      }
-    }.getOrElse(Future.successful(BadRequest("invalid json")))
+      )
   }
-
-  /*def authenticate = Action.async(parse.json) { implicit request =>
-    SignInForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.signIn(formWithErrors))),
-      user => goToLoginSucceded(user.get._id)
-    )
-  }*/
 }

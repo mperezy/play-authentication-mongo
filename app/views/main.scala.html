@@ -1,4 +1,4 @@
-@(page: String, isSignIn: Boolean, jsScript: String)(content: Html)
+@(page: String, isSignIn: Boolean)(content: Html)
 
 @route = @{
     if(isSignIn) {
@@ -75,8 +75,5 @@
             <!-- Load Bootstrap JavaScript components. HTMLUnit (used in testing) requires JQuery 1.8.3 or below). -->
         <script src="@routes.Assets.versioned("js/jquery-3.3.1.min.js")"></script>
         <script src="@routes.Assets.versioned("js/bootstrap.min.js")"></script>
-        @if(!jsScript.isEmpty) {
-            <script src="@routes.Assets.versioned(s"js/$jsScript")"></script>
-        }
     </body>
 </html>

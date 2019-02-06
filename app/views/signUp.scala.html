@@ -3,7 +3,7 @@
 @import play.api.mvc.Flash._
 @import models.Role._
 
-@main("SignUp Page", isSignIn = false, ""){
+@main("SignUp Page", isSignIn = false){
     @helper.form(routes.Sessions.authenticate, 'role -> "form", 'class -> "form-signin") {
         <div class="text-center mb-4">
             <img src="@routes.Assets.versioned("images/scala-icon.png")" alt="" width="80" class="mb-4">

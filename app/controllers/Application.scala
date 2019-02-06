@@ -12,7 +12,6 @@ import scala.concurrent.Future
 object Application extends Controller with AuthenticationElement with AuthConfigImpl {
 
   def showSignInForm = Action.async { implicit request =>
-    println(s"I've got this request: ${request.body}")
     Future.successful(Ok(views.html.signIn(SignInForm.form)))
   }
 

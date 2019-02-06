@@ -1,12 +1,12 @@
 @import forms.SignInForm.LoginUser
 
-@(formLogin: Form[LoginUser])(implicit request: RequestHeader)
+@(formLogin: Form[Option[Account]])(implicit request: RequestHeader, flash: Flash)
 
 @import play.api.mvc.Flash
 @import helper._
 
-@main("SignIn Page", isSignIn = true, "loginScript.js"){
-    @* @form(routes.Sessions.authenticate, 'role -> "form", 'class -> "form-signin") { *@ <div class="form-signin"> @**@
+@main("SignIn Page", isSignIn = true){
+    @form(routes.Sessions.authenticate, 'role -> "form", 'class -> "form-signin") {
         @helper.CSRF.formField
 
         <div class="text-center mb-4">
@@ -39,6 +39,6 @@
             <label for="@formLogin("password").id" class="col-sm-2 col-form-label">Password</label>
             <input id="@formLogin("password").id" name="@formLogin("password").name" value="@formLogin("password").value.getOrElse("")" class="form-control" placeholder="Don't worry, will be our secret..." type="password" required>
         </div>
-        <button id="loginButton" class="btn btn-lg btn-primary btn-block">Login</button>
-    @*}@* </div> @**@
+        <button class="btn btn-lg btn-primary btn-block">Login</button>
+    }
 }

@@ -12,6 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
 trait AuthConfigImpl extends AuthConfig{
+
   type Id = Option[BSONObjectID]
   type Authority = Role
   type User = Account
@@ -37,7 +38,7 @@ trait AuthConfigImpl extends AuthConfig{
 }
 
   def logoutSucceeded(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] = {
-    Future.successful(Results.Ok(Json.obj("result" -> "your're logged out")))
+    Future.successful(Redirect(routes.Application.showSignInForm))
   }
 
   def authenticationFailed(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] = {
