@@ -1,0 +1,24 @@
+#Scala and MongoDB containers
+version: "2"
+
+services:
+  play:
+    container_name: play-scala
+    build: .
+    volumes:
+      - .:/exampleapp
+      - ./.ivy2:/root/.ivy2
+      - ./.sbt:/root/.sbt
+    ports:
+      - 5000:9000
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    stdin_open: true
+
+  mongo:
+    container_name: play-mongo
+    image: mongo:latest
+    ports:
+      - 5001:27017

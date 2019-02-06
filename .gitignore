@@ -1,0 +1,10 @@
+logs
+target
+/.ivy2
+/.sbt
+/.idea
+/.idea_modules
+/.classpath
+/.project
+/.settings
+/RUNNING_PID

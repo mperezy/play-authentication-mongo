@@ -1,0 +1,44 @@
+@import forms.SignInForm.LoginUser
+
+@(formLogin: Form[LoginUser])(implicit request: RequestHeader)
+
+@import play.api.mvc.Flash
+@import helper._
+
+@main("SignIn Page", isSignIn = true, "loginScript.js"){
+    @* @form(routes.Sessions.authenticate, 'role -> "form", 'class -> "form-signin") { *@ <div class="form-signin"> @**@
+        @helper.CSRF.formField
+
+        <div class="text-center mb-4">
+            <img src="@routes.Assets.versioned("images/scala-icon.png")" alt="" width="80" class="mb-4">
+            <h1 class="h3 mb-3 font-weight-normal">Scala Authentication - Sign In</h1>
+            <p>Please enter your creds.</p>
+        </div>
+
+        @* @request.flash.data.map{ case (name, value) =>
+        <div class="alert alert-danger" role="alert">
+        @name: @value
+        </div>
+        } *@
+
+        @* Global errors are not tied to any particular form field *@
+        @* @if(form.hasGlobalErrors) {
+            @form.globalErrors.map { error: FormError =>
+                <div class="alert alert-danger" role="alert">
+                    Error: @error.key: @error.message
+                </div>
+            }
+        }*@
+
+        <div class="form-group @if(formLogin("email").hasErrors) {has-error}">
+            <label for="@formLogin("email").id" class="col-sm-2 col-form-label">Email</label>
+            <input id="@formLogin("email").id" name="@formLogin("email").name" value="@formLogin("email").value.getOrElse("")" class="form-control" placeholder="Type it here..." type="text" required>
+        </div>
+
+        <div class="form-group @if(formLogin("password").hasErrors) {has-error}">
+            <label for="@formLogin("password").id" class="col-sm-2 col-form-label">Password</label>
+            <input id="@formLogin("password").id" name="@formLogin("password").name" value="@formLogin("password").value.getOrElse("")" class="form-control" placeholder="Don't worry, will be our secret..." type="password" required>
+        </div>
+        <button id="loginButton" class="btn btn-lg btn-primary btn-block">Login</button>
+    @*}@* </div> @**@
+}
