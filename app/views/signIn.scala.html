@@ -1,11 +1,11 @@
 @import forms.SignInForm.LoginUser
 
-@(formLogin: Form[Option[Account]])(implicit request: RequestHeader, flash: Flash)
+@(formLogin: Form[Option[Account]], account: Account)(implicit request: RequestHeader, flash: Flash)
 
 @import play.api.mvc.Flash
 @import helper._
 
-@main("SignIn Page", isSignIn = true){
+@main("SignIn Page - Play Authentication", account){
     @form(routes.Sessions.authenticate, 'role -> "form", 'class -> "form-signin") {
         @helper.CSRF.formField
 
@@ -15,30 +15,28 @@
             <p>Please enter your creds.</p>
         </div>
 
-        @* @request.flash.data.map{ case (name, value) =>
-        <div class="alert alert-danger" role="alert">
-        @name: @value
-        </div>
-        } *@
-
-        @* Global errors are not tied to any particular form field *@
-        @* @if(form.hasGlobalErrors) {
-            @form.globalErrors.map { error: FormError =>
-                <div class="alert alert-danger" role="alert">
-                    Error: @error.key: @error.message
-                </div>
-            }
-        }*@
-
         <div class="form-group @if(formLogin("email").hasErrors) {has-error}">
             <label for="@formLogin("email").id" class="col-sm-2 col-form-label">Email</label>
-            <input id="@formLogin("email").id" name="@formLogin("email").name" value="@formLogin("email").value.getOrElse("")" class="form-control" placeholder="Type it here..." type="text" required>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">@{"@"}</div>
+                </div>
+                <input id="@formLogin("email").id" name="@formLogin("email").name" value="@formLogin("email").value.getOrElse("")" class="form-control" placeholder="Type it here..." type="text" required>
+            </div>
         </div>
 
         <div class="form-group @if(formLogin("password").hasErrors) {has-error}">
             <label for="@formLogin("password").id" class="col-sm-2 col-form-label">Password</label>
-            <input id="@formLogin("password").id" name="@formLogin("password").name" value="@formLogin("password").value.getOrElse("")" class="form-control" placeholder="Don't worry, will be our secret..." type="password" required>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">pass</div>
+                </div>
+                <input id="@formLogin("password").id" name="@formLogin("password").name" value="@formLogin("password").value.getOrElse("")" class="form-control" placeholder="Don't worry, will be our secret..." type="password" required>
+            </div>
         </div>
+        <small>Don't have any account yet? Please <a href="@routes.Application.showSignUpForm()">sign up</a></small>
+        <br>
+        <br>
         <button class="btn btn-lg btn-primary btn-block">Login</button>
     }
 }

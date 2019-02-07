@@ -1,5 +1,13 @@
 @(account: Account)(implicit request: RequestHeader)
 
-<div>Hey there, you're logged in!!</div>
-
-<a href="@routes.Sessions.logout" class="btn btn-primary">Log out</a>
+@main("Dashboard - Play Authentication", account) {
+    <main role="main" class="flex-shrink-0">
+        <div class="container">
+            <h1 class="mt-5">Helllo there <b>@account.firstName!!</b></h1>
+            <p class="lead">Welcome to the dashboard page, at this moment this template is empty, but write some <code>sweet code</code> to give this beauty an awesome life, so...</p>
+            <p>... begin to start writing some <code>code</code> to rock this baby!!</p>
+            <br>
+            <p class="lead">This template was based on this Play2-auth repo, so go there and see the documentation <a href="https://github.com/t2v/play2-auth" target="_blank">here</a> </p>
+        </div>
+    </main>
+}

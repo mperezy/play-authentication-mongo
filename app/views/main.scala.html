@@ -1,23 +1,4 @@
-@(page: String, isSignIn: Boolean)(content: Html)
-
-@route = @{
-    if(isSignIn) {
-        routes.Application.showSignUpForm
-    }
-    else {
-        routes.Application.showSignInForm
-    }
-}
-
-@text = @{
-    if(isSignIn) {
-        "Sign Up"
-    }
-    else {
-        "Sign In"
-    }
-}
-
+@(page: String, account: Account)(content: Html)
 <!DOCTYPE html>
 <html>
     <head>
@@ -33,44 +14,9 @@
         <script src="http://cdnjs.cloudflare.com/ajax/libs/respond.js/1.2.0/respond.js"></script>
         <![endif]-->
     </head>
-    <body>
-            <!-- Responsive navbar -->
-        <header>
-            <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-                <a class="navbar-brand" href="#">Play-Scala-Template</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="@route">@text</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="@routes.Sessions.logout">Sign out</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link disabled" href="#">Disabled</a>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
-                        <li class="nav-item dropdown">
-                            <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                User
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bd-versions">
-                                <a class="dropdown-item" href="#/">Profile</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Logout</a>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </header>
+    <body class="d-flex flex-column h-100">
+        <!-- Responsive navbar -->
+        @navBar(account)
         @content
             <!-- Load Bootstrap JavaScript components. HTMLUnit (used in testing) requires JQuery 1.8.3 or below). -->
         <script src="@routes.Assets.versioned("js/jquery-3.3.1.min.js")"></script>
