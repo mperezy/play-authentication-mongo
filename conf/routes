@@ -15,8 +15,8 @@ GET /dashboard                      controllers.Application.showDashboard
 POST    /login                              controllers.Sessions.authenticate
 GET     /logout                             controllers.Sessions.logout
 POST    /account/create                     controllers.AccountsCtrl.createUser
-POST    /account/update                     controllers.AccountsCtrl.modifyUser
-POST    /account/basics                     controllers.AccountsCtrl.modifyUserBasics
+# POST    /account/update                     controllers.AccountsCtrl.modifyUser
+# POST    /account/basics                     controllers.AccountsCtrl.modifyUserBasics
 GET     /account/admin             	        controllers.AccountsCtrl.adminCheck
 GET     /account/current                    controllers.AccountsCtrl.currentUser
 GET     /account/list                       controllers.AccountsCtrl.getUsers(page: Int, numberByPage: Int)

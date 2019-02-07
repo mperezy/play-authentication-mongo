@@ -21,17 +21,16 @@ object Sessions extends Controller with LoginLogout with AuthConfigImpl {
     ).removingFromSession("rememberme"))
   }
 
-  def authenticate = Action.async { implicit request => 
-      SignInForm.form.bindFromRequest.fold(
-        formWithErrors => Future.successful(Redirect(routes.Application.showSignInForm())),
-        user => Account.authenticate(user.get.email, user.get.password) match {
-          case account => {
-            //TODO always set cookie to be refactored
-            val req = request.copy(tags = request.tags + ("rememberme" -> "true"))
-            gotoLoginSucceeded(account.get._id)(req, defaultContext).map(_.withSession("rememberme" -> "true"))
-          }
-          case _ => Future.successful(BadRequest(Json.obj("result" -> "Couldn't get user from db")))
+  def authenticate = Action.async { implicit request =>
+    SignInForm.form.bindFromRequest.fold(
+      formWithErrors => Future.successful(Redirect(routes.Application.showSignInForm())),
+      user => Account.authenticate(user.get.email, user.get.password) match {
+        case account => {
+          //TODO always set cookie to be refactored
+          val req = request.copy(tags = request.tags + ("rememberme" -> "true"))
+          gotoLoginSucceeded(account.get._id)(req, defaultContext).map(_.withSession("rememberme" -> "true"))
         }
-      )
+      }
+    )
   }
 }

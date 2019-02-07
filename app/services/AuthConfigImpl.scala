@@ -45,7 +45,7 @@ trait AuthConfigImpl extends AuthConfig{
   }
 
   override def authorizationFailed(request: RequestHeader, user: User, authority: Option[Authority])(implicit ctx: ExecutionContext): Future[Result] = {
-    Future.successful(Results.Unauthorized(Json.obj("result" -> "authorization failed")))
+    Future.successful(Redirect(routes.Application.showSignInForm))
   }
 
   def authorizationFailed(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] = throw new AssertionError

@@ -1,5 +1,7 @@
 package controllers
 
+import controllers.Sessions.{BadRequest, gotoLoginSucceeded}
+import forms.SignUpForm
 import jp.t2v.lab.play2.auth.AuthElement
 import models.Role.{Admin, Normal}
 import org.slf4j.{Logger, LoggerFactory}
@@ -14,23 +16,22 @@ import reactivemongo.api.{Cursor, QueryOpts}
 import reactivemongo.bson.{BSONDocument, BSONObjectID}
 import reactivemongo.core.protocol.QueryFlags
 import services.AuthConfigImpl
-import models.Account
-import play.api.Play
 import play.api.libs.json.Json
-import play.api.mvc.{Controller}
+import play.api.mvc.Controller
 import models.Account
 import reactivemongo.core.protocol.QueryFlags
-import reactivemongo.api.{QueryOpts}
+import reactivemongo.api.QueryOpts
 import jp.t2v.lab.play2.auth.AuthElement
-import models.Role.{Normal, Admin}
+import models.Role.{Admin, Normal}
 import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.bson.BSONDocument
 import services.AuthConfigImpl
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.modules.reactivemongo.{ MongoController}
-import org.slf4j.{LoggerFactory, Logger}
+import play.modules.reactivemongo.MongoController
+import org.slf4j.{Logger, LoggerFactory}
 import reactivemongo.api.Cursor
 import play.api.libs.json._
+import play.api.mvc.Results.Redirect
 import play.modules.reactivemongo.json.BSONFormats._
 import reactivemongo.bson.BSONObjectID
 
@@ -67,83 +68,83 @@ object AccountsCtrl extends Controller with MongoController  with AuthElement wi
   }
 
   //TODO Admin with the rights to modify the email
-  def modifyUser = AsyncStack(parse.json, AuthorityKey -> Admin, AuthorityKey -> Normal) {
-    implicit request => request.body.validate[Account].map {
-      profile => {
-        loggedIn match {
-          case user if(user.role.get == "Administrator") => {
-            val profileTmp = profile.copy(_id = None)
-            val selec = BSONDocument("_id" -> profile._id.get)
-            collection.update(selec, profileTmp, upsert = false).map{
-              lastError => lastError.inError match {
-                case true => {
-                  logger.debug(s"error at atelier update : $lastError")
-                  InternalServerError(s"error at user's update : $lastError")
-                }
-                case false =>{
-                  Ok(s"user have been updated: $lastError")
-                }
-              }
-            }
-          }
+//  def modifyUser = AsyncStack(parse.json, AuthorityKey -> Admin, AuthorityKey -> Normal) {
+//    implicit request => request.body.validate[Account].map {
+//      profile => {
+//        loggedIn match {
+//          case user if(user.role.get == "Administrator") => {
+//            val profileTmp = profile.copy(_id = None)
+//            val selec = BSONDocument("_id" -> profile._id.get)
+//            collection.update(selec, profileTmp, upsert = false).map{
+//              lastError => lastError.inError match {
+//                case true => {
+//                  logger.debug(s"error at atelier update : $lastError")
+//                  InternalServerError(s"error at user's update : $lastError")
+//                }
+//                case false =>{
+//                  Ok(s"user have been updated: $lastError")
+//                }
+//              }
+//            }
+//          }
+//
+//          case user if (user._id.get == profile._id.get) => {
+//            val profileTmp = profile.copy(_id = None)
+//            Account.create(profileTmp).map {
+//              lastError => logger.debug(s"user successfully modified with LastError: $lastError")
+//                Ok(s"User have been successfully modified")
+//            }
+//          }
+//
+//
+//          case x =>{
+//            Future.successful(Ok(s"sorry you are not allowed to modify this entity "+x.role))
+//          }
+//        }
+//      }
+//
+//    }.getOrElse(Future.successful(BadRequest("invalid json")))
+//  }
 
-          case user if (user._id.get == profile._id.get) => {
-            val profileTmp = profile.copy(_id = None)
-            Account.create(profileTmp).map {
-              lastError => logger.debug(s"user successfully modified with LastError: $lastError")
-                Ok(s"User have been successfully modified")
-            }
-          }
-
-
-          case x =>{
-            Future.successful(Ok(s"sorry you are not allowed to modify this entity "+x.role))
-          }
-        }
-      }
-
-    }.getOrElse(Future.successful(BadRequest("invalid json")))
-  }
-
-  def modifyUserBasics = AsyncStack(parse.json, AuthorityKey -> Admin, AuthorityKey -> Normal) {
-    implicit request => request.body.validate[Account].map {
-      profile => {
-        val newPassword = (request.body.as[JsObject]\ "newPassword").asOpt[String].getOrElse("")
-        loggedIn match {
-          case user if(newPassword != "") =>{
-
-            if(user.password != profile.password) {
-              Future.successful(BadRequest(s"L'ancien mot de passe est erronée."))
-            }
-            else {
-              if (user._id.get == profile._id.get) {
-                val profileTmp = profile.copy(_id = None, password = newPassword)
-                Account.create(profileTmp).map {
-                  lastError => logger.debug(s"user successfully modified with LastError: $lastError")
-                    Ok(s"User have been successfully modified")
-                }
-              }
-              else {
-                Future.successful(BadRequest(s"Vous n'êtes pas autorisé à modifier cet utilisateur."))
-              }
-            }
-          }
-          case user if (user._id.get == profile._id.get) => {
-            val profileTmp = profile.copy(_id = None)
-            Account.create(profileTmp).map {
-              lastError => logger.debug(s"user successfully modified with LastError: $lastError")
-                Ok(s"User have been successfully modified")
-            }
-          }
-
-          case x =>{
-            Future.successful(Ok(s"sorry you are not allowed to modify this entity "+x.role))
-          }
-        }
-      }
-
-    }.getOrElse(Future.successful(BadRequest("invalid json")))
-  }
+//  def modifyUserBasics = AsyncStack(parse.json, AuthorityKey -> Admin, AuthorityKey -> Normal) {
+//    implicit request => request.body.validate[Account].map {
+//      profile => {
+//        val newPassword = (request.body.as[JsObject]\ "newPassword").asOpt[String].getOrElse("")
+//        loggedIn match {
+//          case user if(newPassword != "") =>{
+//
+//            if(user.password != profile.password) {
+//              Future.successful(BadRequest(s"L'ancien mot de passe est erronée."))
+//            }
+//            else {
+//              if (user._id.get == profile._id.get) {
+//                val profileTmp = profile.copy(_id = None, password = newPassword)
+//                Account.create(profileTmp).map {
+//                  lastError => logger.debug(s"user successfully modified with LastError: $lastError")
+//                    Ok(s"User have been successfully modified")
+//                }
+//              }
+//              else {
+//                Future.successful(BadRequest(s"Vous n'êtes pas autorisé à modifier cet utilisateur."))
+//              }
+//            }
+//          }
+//          case user if (user._id.get == profile._id.get) => {
+//            val profileTmp = profile.copy(_id = None)
+//            Account.create(profileTmp).map {
+//              lastError => logger.debug(s"user successfully modified with LastError: $lastError")
+//                Ok(s"User have been successfully modified")
+//            }
+//          }
+//
+//          case x =>{
+//            Future.successful(Ok(s"sorry you are not allowed to modify this entity "+x.role))
+//          }
+//        }
+//      }
+//
+//    }.getOrElse(Future.successful(BadRequest("invalid json")))
+//  }
 
   //TODO implement search user by regex with search form
   // page must start at 1
@@ -209,15 +210,23 @@ object AccountsCtrl extends Controller with MongoController  with AuthElement wi
     }
   }
 
-  def createUser =  AsyncStack(parse.json){
-    implicit request => request.body.validate[Account].map {
-      profile: Account => {
-        Account.create(profile).map{
-          lastError => logger.debug(s"successfully inserted with LastError: $lastError")
-            Created(s"User have been successfully created")
+  def createUser = Action.async { implicit request =>
+    SignUpForm.form.bindFromRequest.fold(
+      formWithErrors => Future.successful(BadRequest("invalid json")),
+      newUser => {
+        Account.create(newUser).map{
+          lastError =>
+            println(s"successfully inserted with LastError: $lastError")
+        }
+        Thread.sleep(1000)
+        Account.authenticate(newUser.email, newUser.password) match {
+          case account => {
+            val req = request.copy(tags = request.tags + ("rememberme" -> "true"))
+            gotoLoginSucceeded(account.get._id)(req, defaultContext).map(_.withSession("rememberme" -> "true"))
+          }
         }
       }
-    }.getOrElse(Future.successful(BadRequest("invalid json")))
+    )
   }
 
   def uploadAvatar(user_id: String) = AsyncStack(parse.multipartFormData, AuthorityKey -> Admin, AuthorityKey -> Normal) {
@@ -272,6 +281,5 @@ object AccountsCtrl extends Controller with MongoController  with AuthElement wi
       }
     }
   }
-
 }
 

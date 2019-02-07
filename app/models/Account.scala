@@ -2,6 +2,7 @@ package models
 
 import java.util.concurrent.TimeUnit
 
+import controllers.Sessions.{BadRequest, gotoLoginSucceeded}
 import org.joda.time.DateTime
 import org.slf4j.{Logger, LoggerFactory}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -13,6 +14,9 @@ import reactivemongo.core.commands.LastError
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
+
+import play.modules.reactivemongo.json.BSONFormats._
+import play.api.libs.json.Json
 
 case class Account(
                   _id: Option[BSONObjectID] = None,
@@ -27,15 +31,9 @@ case class Account(
 
 object Account extends Controller with MongoController {
 
-  import play.modules.reactivemongo.json.BSONFormats._
-  import play.api.libs.json.Json
-
-
   implicit val AccountFormat = Json.format[Account] ;
   private final val logger: Logger = LoggerFactory.getLogger(classOf[Account])
   def collection: JSONCollection = db.collection[JSONCollection]("Accounts")
-
-
 
   def authenticate(email: String, password: String): Option[Account] = {
     val cursor  = collection.find(
@@ -59,16 +57,16 @@ object Account extends Controller with MongoController {
   }
 
   def findAll(): Seq[Account] = {
-     val cursor  = collection.find(
+    val cursor  = collection.find(
         Json.obj()
-   ).sort(Json.obj("update_date" -> -1))
+    ).sort(Json.obj("update_date" -> -1))
        .cursor[Account].collect[List]()
     Await.result(cursor, Duration(5, TimeUnit.SECONDS))
   }
 
-  def create(account: Account):Future[LastError] = {
-     val updatedUser = account.copy(update_date = Some(new DateTime()));
-        val selec = BSONDocument("email" -> account.email);
-        collection.update(selec, updatedUser, upsert = true)
+  def create(account: Account): Future[LastError] = {
+    val updatedUser = account.copy(update_date = Some(new DateTime()))
+    val selec = BSONDocument("email" -> account.email)
+    collection.update(selec, updatedUser, upsert = true)
   }
 }

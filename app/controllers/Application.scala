@@ -22,7 +22,10 @@ object Application extends Controller with AuthenticationElement with AuthConfig
   }
 
   def showSignUpForm = Action.async { implicit request =>
-    Future.successful(Ok(views.html.signUp(SignUpForm.form, emptyAccount)))
+    request.session.get("rememberme") match {
+      case Some(string) => Future.successful(Redirect(routes.Application.showDashboard()))
+      case _ => Future.successful(Ok(views.html.signUp(SignUpForm.form, emptyAccount)))
+    }
   }
 
   def showDashboard = StackAction { implicit request =>
