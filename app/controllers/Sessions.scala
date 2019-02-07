@@ -15,8 +15,6 @@ object Sessions extends Controller with LoginLogout with AuthConfigImpl {
 
   private final val logger: Logger = LoggerFactory.getLogger(classOf[Account])
 
-  import models.Account._
-
   def logout = Action.async { implicit request =>
     gotoLogoutSucceeded.map(_.flashing(
       "success" -> "You've been logged out"
@@ -25,7 +23,7 @@ object Sessions extends Controller with LoginLogout with AuthConfigImpl {
 
   def authenticate = Action.async { implicit request => 
       SignInForm.form.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(views.html.signIn(formWithErrors))),
+        formWithErrors => Future.successful(Redirect(routes.Application.showSignInForm())),
         user => Account.authenticate(user.get.email, user.get.password) match {
           case account => {
             //TODO always set cookie to be refactored

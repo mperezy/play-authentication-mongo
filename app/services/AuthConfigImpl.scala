@@ -32,7 +32,6 @@ trait AuthConfigImpl extends AuthConfig{
   def sessionTimeoutInSeconds: Int = 2592000
 
   def loginSucceeded(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] = {
-  //Future.successful(Results.Ok(Json.obj("result" -> "your're connected")))
     val uri = request.session.get("access_uri").getOrElse(routes.Application.showDashboard.url.toString)
     Future.successful(Redirect(uri).withSession(request.session - "access_uri"))
 }
@@ -42,7 +41,6 @@ trait AuthConfigImpl extends AuthConfig{
   }
 
   def authenticationFailed(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] = {
-    //Future.successful(Results.Forbidden(Json.obj("result" -> "authentification failed")))
     Future.successful(Redirect(routes.Application.showSignInForm).withSession("access_uri" -> request.uri))
   }
 

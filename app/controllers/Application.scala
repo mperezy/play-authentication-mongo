@@ -1,10 +1,8 @@
 package controllers
 
 import forms.{SignInForm, SignUpForm}
-import play.api._
 import play.api.mvc._
 import jp.t2v.lab.play2.auth.AuthenticationElement
-import models.Account
 import services.AuthConfigImpl
 
 import scala.concurrent.Future
@@ -12,7 +10,10 @@ import scala.concurrent.Future
 object Application extends Controller with AuthenticationElement with AuthConfigImpl {
 
   def showSignInForm = Action.async { implicit request =>
-    Future.successful(Ok(views.html.signIn(SignInForm.form)))
+    request.session.get("rememberme") match {
+      case Some(string) => Future.successful(Redirect(routes.Application.showDashboard()))
+      case _ => Future.successful(Ok(views.html.signIn(SignInForm.form)))
+    }
   }
 
   def showSignUpForm = Action.async { implicit request =>
