@@ -1,0 +1,24 @@
+@(title: String)(content: Html)
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="@routes.Assets.versioned("css/bootstrap.min.css")" rel="stylesheet" id="bootstrap-css">
+        <style>
+            body {
+                background: #dedede;
+            }
+            .page-wrap {
+                min-height: 100vh;
+            }
+        </style>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/scala-icon.png")">
+        <title>@title</title>
+    </head>
+    <body>
+        <div>
+            <section class="content">
+                @content
+            </section>
+        </div>
+    </body>
+</html>

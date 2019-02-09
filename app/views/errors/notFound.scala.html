@@ -1,0 +1,17 @@
+@import play.api.mvc.RequestHeader
+@(request: RequestHeader)
+
+@mainErrors("Page not found - Play Authentication"){
+    <div class="page-wrap d-flex flex-row align-items-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-12 text-center">
+                    <span class="display-1 d-block">404</span>
+                    <h3>Oops Page Not Found</h3>
+                    <div class="mb-4 lead">The page you are looking for was not found.</div>
+                    <a href="@routes.Application.showSignInForm()" class="btn btn-link">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

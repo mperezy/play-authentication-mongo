@@ -1,0 +1,16 @@
+@(error: Throwable)
+
+@mainErrors("Internal Server Error - Play Authentication"){
+    <div class="page-wrap d-flex flex-row align-items-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-12 text-center">
+                    <span class="display-1 d-block">500</span>
+                    <h3>Oops Something went wrong!</h3>
+                    <div class="mb-4 lead">We'll work on that in order to solve it as soon as possible</div>
+                    <a href="@routes.Application.showSignInForm()" class="btn btn-link">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
