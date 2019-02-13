@@ -19,7 +19,7 @@
             <label for="@formLogin("email").id" class="col-sm-2 col-form-label">Email</label>
             <div class="input-group">
                 <div class="input-group-prepend">
-                    <div class="input-group-text">@{"@"}</div>
+                    <div class="input-group-text"><span class="oi oi-envelope-closed"></span></div>
                 </div>
                 <input id="@formLogin("email").id" name="@formLogin("email").name" value="@formLogin("email").value.getOrElse("")" class="form-control" placeholder="Type it here..." type="text" required>
             </div>
@@ -29,7 +29,7 @@
             <label for="@formLogin("password").id" class="col-sm-2 col-form-label">Password</label>
             <div class="input-group">
                 <div class="input-group-prepend">
-                    <div class="input-group-text">pass</div>
+                    <div class="input-group-text"><span class="oi oi-key"></span></div>
                 </div>
                 <input id="@formLogin("password").id" name="@formLogin("password").name" value="@formLogin("password").value.getOrElse("")" class="form-control" placeholder="Don't worry, will be our secret..." type="password" required>
             </div>
