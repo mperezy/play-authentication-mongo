@@ -2,6 +2,7 @@
 
 @main("Dashboard - Play Authentication", account) {
     <main role="main" class="flex-shrink-0">
+        @request.flash.data.map { case (name, value) => @alertMessage(name, value) }
         <div class="container">
             <h1 class="mt-5">Helllo there <b>@account.firstName!!</b></h1>
             <p class="lead">Welcome to the dashboard page, at this moment this template is empty, but write some <code>sweet code</code> to give this beauty an awesome life, so...</p>

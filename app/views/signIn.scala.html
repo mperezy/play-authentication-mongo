@@ -1,6 +1,6 @@
 @import forms.SignInForm.LoginUser
 
-@(formLogin: Form[Option[Account]], account: Account)(implicit request: RequestHeader, flash: Flash)
+@(formLogin: Form[Option[Account]], account: Account)(implicit request: RequestHeader)
 
 @import play.api.mvc.Flash
 @import helper._
@@ -12,8 +12,9 @@
         <div class="text-center mb-4">
             <img src="@routes.Assets.versioned("images/scala-icon.png")" alt="" width="80" class="mb-4">
             <h1 class="h3 mb-3 font-weight-normal">Scala Authentication - Sign In</h1>
-            <p>Please enter your creds.</p>
         </div>
+
+        @request.flash.data.map { case (name, value) => @alertMessage(name, value) }
 
         <div class="form-group @if(formLogin("email").hasErrors) {has-error}">
             <label for="@formLogin("email").id" class="col-sm-2 col-form-label">Email</label>

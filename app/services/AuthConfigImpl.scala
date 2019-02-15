@@ -33,7 +33,7 @@ trait AuthConfigImpl extends AuthConfig{
 
   def loginSucceeded(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] = {
     val uri = request.session.get("access_uri").getOrElse(routes.Application.showDashboard.url.toString)
-    Future.successful(Redirect(uri).withSession(request.session - "access_uri"))
+    Future.successful(Redirect(uri).withSession(request.session - "access_uri").flashing("success" -> "You successfuly logged in"))
 }
 
   def logoutSucceeded(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] = {

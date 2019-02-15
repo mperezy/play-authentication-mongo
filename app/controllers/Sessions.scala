@@ -17,13 +17,13 @@ object Sessions extends Controller with LoginLogout with AuthConfigImpl {
 
   def logout = Action.async { implicit request =>
     gotoLogoutSucceeded.map(_.flashing(
-      "success" -> "You've been logged out"
+      "info" -> "You've been logged out"
     ).removingFromSession("rememberme"))
   }
 
   def authenticate = Action.async { implicit request =>
     SignInForm.form.bindFromRequest.fold(
-      formWithErrors => Future.successful(Redirect(routes.Application.showSignInForm())),
+      formWithErrors => Future.successful(Redirect(routes.Application.showSignInForm()).flashing("danger" -> "Those credentials are not valid.")),
       user => Account.authenticate(user.get.email, user.get.password) match {
         case account => {
           //TODO always set cookie to be refactored
