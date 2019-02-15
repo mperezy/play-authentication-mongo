@@ -11,6 +11,4 @@ class CustomCookieAccessor(maxAge: Int) extends CookieTokenAccessor() {
     val c = Cookie(cookieName, sign(token), _maxAge, cookiePathOption, cookieDomainOption, cookieSecureOption, cookieHttpOnlyOption)
     result.withCookies(c)
   }
-
-
 }

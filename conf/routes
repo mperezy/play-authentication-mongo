@@ -3,19 +3,20 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.showSignInForm
+GET     /                                   controllers.Application.showSignInForm
 
 # SignUp page
-GET /signup                         controllers.Application.showSignUpForm
+GET     /signup                             controllers.Application.showSignUpForm
 
 # Dashboard page
-GET /dashboard                      controllers.Application.showDashboard
+GET     /dashboard                          controllers.Application.showDashboard
 
 # users accounts
 POST    /login                              controllers.Sessions.authenticate
 GET     /logout                             controllers.Sessions.logout
 POST    /account/create                     controllers.AccountsCtrl.createUser
-# POST    /account/update                     controllers.AccountsCtrl.modifyUser
+GET     /profile                            controllers.Application.showProfile
+POST    /account/update                     controllers.AccountsCtrl.modifyUser
 # POST    /account/basics                     controllers.AccountsCtrl.modifyUserBasics
 GET     /account/admin             	        controllers.AccountsCtrl.adminCheck
 GET     /account/current                    controllers.AccountsCtrl.currentUser

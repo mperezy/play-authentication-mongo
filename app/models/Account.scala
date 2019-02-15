@@ -1,8 +1,6 @@
 package models
 
 import java.util.concurrent.TimeUnit
-
-import controllers.Sessions.{BadRequest, gotoLoginSucceeded}
 import org.joda.time.DateTime
 import org.slf4j.{Logger, LoggerFactory}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -11,10 +9,8 @@ import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.bson.{BSONDocument, BSONObjectID}
 import reactivemongo.core.commands.LastError
-
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
-
 import play.modules.reactivemongo.json.BSONFormats._
 import play.api.libs.json.Json
 
@@ -65,6 +61,12 @@ object Account extends Controller with MongoController {
   }
 
   def create(account: Account): Future[LastError] = {
+    val updatedUser = account.copy(update_date = Some(new DateTime()))
+    val selec = BSONDocument("email" -> account.email)
+    collection.update(selec, updatedUser, upsert = true)
+  }
+
+  def update(account: Account): Future[LastError] = {
     val updatedUser = account.copy(update_date = Some(new DateTime()))
     val selec = BSONDocument("email" -> account.email)
     collection.update(selec, updatedUser, upsert = true)

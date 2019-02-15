@@ -1,0 +1,73 @@
+@import org.joda.time.DateTime
+@import reactivemongo.bson.BSONObjectID
+@import models.Role._
+@import helper._
+
+@(account: Account, formProfile: Form[Account])(implicit request: RequestHeader)
+
+@main("Profile Page - Play Authentication", account){
+    @helper.form(routes.AccountsCtrl.modifyUser, 'role -> "form", 'class -> "form-signin") {
+        @helper.CSRF.formField
+        <div class="text-center mb-4">
+            <h1 class="h3 mb-3 font-weight-normal">Profile</h1>
+        </div>
+
+        <div class="form-group @if(formProfile("firstName").hasErrors) {has-error}">
+            <label for="@formProfile("firstName").id" class="col-sm-2 col-form-label">Name</label>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text"><span class="oi oi-person"></span></div>
+                </div>
+                <input id="@formProfile("firstName").id" name="@formProfile("firstName").name" value="@formProfile("firstName").value.getOrElse(account.firstName)" class="form-control" placeholder="Type it here..." type="text" required>
+            </div>
+        </div>
+
+        <div class="form-group @if(formProfile("lastName").hasErrors) {has-error}">
+            <label for="@formProfile("lastName").id" class="col-sm-2 col-form-label">LastName</label>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text"><span class="oi oi-person"></span></div>
+                </div>
+                <input id="@formProfile("lastName").id" name="@formProfile("lastName").name" value="@formProfile("lastName").value.getOrElse(account.lastName)" class="form-control" placeholder="Type it here..." type="text" required>
+            </div>
+        </div>
+
+        <div class="form-group @if(formProfile("email").hasErrors) {has-error}">
+            <label for="@formProfile("email").id" class="col-sm-2 col-form-label">Email</label>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text"><span class="oi oi-envelope-closed"></span></div>
+                </div>
+                <input id="@formProfile("email").id" name="@formProfile("email").name" value="@formProfile("email").value.getOrElse(account.email)" class="form-control" placeholder="Type it here..." type="email" required>
+            </div>
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+
+        <div class="form-group @if(formProfile("password").hasErrors) {has-error}">
+            <label for="@formProfile("password").id" class="col-sm-2 col-form-label">Password</label>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text"><span class="oi oi-key"></span></div>
+                </div>
+                <input id="@formProfile("password").id" name="@formProfile("password").name" value="@formProfile("password").value.getOrElse("")" class="form-control" placeholder="Don't worry, will be our secret..." type="password" required>
+            </div>
+        </div>
+
+        <div class="firm-group">
+            <label for="@formProfile("role").id" class="col-sm-2 col-form-label">Role</label>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text"><span class="oi oi-tags"></span></div>
+                </div>
+                <select name="@formProfile("role").name" id="@formProfile("role").id" value="@formProfile("role").value.getOrElse("")" class="form-control">
+                    <option value="" default>Select a role</option>
+                    <option value="">@Role.stringValueOf(Admin)</option>
+                    <option value="">@Role.stringValueOf(Normal)</option>
+                </select>
+            </div>
+        </div>
+        <br>
+        <br>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
+    }
+}

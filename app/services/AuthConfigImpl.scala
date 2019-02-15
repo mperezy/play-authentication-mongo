@@ -3,11 +3,9 @@ package services
 import controllers.routes
 import jp.t2v.lab.play2.auth._
 import models.{Account, Role}
-import play.api.libs.json.Json
-import play.api.mvc.{RequestHeader, Result, Results}
+import play.api.mvc.{RequestHeader, Result}
 import play.api.mvc.Results.Redirect
 import reactivemongo.bson.BSONObjectID
-
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 

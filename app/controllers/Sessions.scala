@@ -5,10 +5,8 @@ import jp.t2v.lab.play2.auth.LoginLogout
 import models.Account
 import org.slf4j.{Logger, LoggerFactory}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.json.Json
 import play.api.mvc._
 import services.AuthConfigImpl
-
 import scala.concurrent.Future
 
 object Sessions extends Controller with LoginLogout with AuthConfigImpl {

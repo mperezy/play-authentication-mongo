@@ -7,7 +7,6 @@ import models.Account
 import org.joda.time.DateTime
 import reactivemongo.bson.BSONObjectID
 import services.AuthConfigImpl
-
 import scala.concurrent.Future
 
 object Application extends Controller with AuthenticationElement with AuthConfigImpl {
@@ -31,5 +30,9 @@ object Application extends Controller with AuthenticationElement with AuthConfig
   def showDashboard = StackAction { implicit request =>
     val user: User = loggedIn
     Ok(views.html.dashboard(user))
+  }
+
+  def showProfile = StackAction { implicit request =>
+    Ok(views.html.profile(loggedIn, SignUpForm.form))
   }
 }
