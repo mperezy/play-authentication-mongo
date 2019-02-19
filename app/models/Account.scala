@@ -62,8 +62,7 @@ object Account extends Controller with MongoController {
 
   def create(account: Account): Future[LastError] = {
     val updatedUser = account.copy(update_date = Some(new DateTime()))
-    val selec = BSONDocument("email" -> account.email)
-    collection.update(selec, updatedUser, upsert = true)
+    collection.insert(updatedUser)
   }
 
   def update(account: Account): Future[LastError] = {

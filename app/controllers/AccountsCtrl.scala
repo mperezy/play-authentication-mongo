@@ -21,7 +21,8 @@ import reactivemongo.api.Cursor
 import play.api.libs.json._
 import play.modules.reactivemongo.json.BSONFormats._
 import reactivemongo.bson.BSONObjectID
-import scala.concurrent.Future
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
 object AccountsCtrl extends Controller with MongoController  with AuthElement with AuthConfigImpl {
   private final val logger: Logger = LoggerFactory.getLogger(classOf[Account])
@@ -38,7 +39,6 @@ object AccountsCtrl extends Controller with MongoController  with AuthElement wi
       }
     }
   }
-
 
   //TODO remove password from the user
   def currentUser = AsyncStack(AuthorityKey -> Admin, AuthorityKey -> Normal){
@@ -57,11 +57,10 @@ object AccountsCtrl extends Controller with MongoController  with AuthElement wi
     SignUpForm.form.bindFromRequest.fold(
       formwithErrors => Future.successful(BadRequest("invidalid json")),
       updateUser => {
-        Account.update(updateUser).map {
+        Await.result(Account.update(updateUser).map {
           lastError => println(s"Successfully updated with lastError: $lastError")
-        }
-        Thread.sleep(1000)
-        Future.successful(Redirect(routes.Application.showDashboard()))
+        }, 1.seconds)
+        Future.successful(Redirect(routes.Application.showDashboard())flashing("success" -> s"Your data has been successfully updated."))
       }
     )
   }
@@ -134,16 +133,17 @@ object AccountsCtrl extends Controller with MongoController  with AuthElement wi
     SignUpForm.form.bindFromRequest.fold(
       formWithErrors => Future.successful(BadRequest("invalid json")),
       newUser => {
-        Account.create(newUser).map{
-          lastError =>
-            println(s"successfully inserted with LastError: $lastError")
-        }
-        Thread.sleep(1000)
-        Account.authenticate(newUser.email, newUser.password) match {
-          case account => {
-            val req = request.copy(tags = request.tags + ("rememberme" -> "true"))
-            gotoLoginSucceeded(account.get._id)(req, defaultContext).map(_.withSession("rememberme" -> "true"))
-          }
+        Account.findByEmail(newUser.email) match {
+          case Some(account: Account) => Future.successful(Redirect(routes.Application.showSignUpForm()).flashing("danger" -> s"The user with ${newUser.email} is already exists."))
+          case _ =>
+            Await.result(Account.create(newUser).map {
+              lastError => println(s"successfully inserted the user: ${newUser.firstName} ${newUser.password} with LastError: $lastError")
+            }, 1.seconds)
+            Account.authenticate(newUser.email, newUser.password) match {
+              case account =>
+                val req = request.copy(tags = request.tags + ("rememberme" -> "true"))
+                gotoLoginSucceeded(account.get._id)(req, defaultContext).map(_.withSession("rememberme" -> "true"))
+            }
         }
       }
     )

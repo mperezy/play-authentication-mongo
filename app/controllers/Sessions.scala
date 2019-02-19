@@ -23,11 +23,10 @@ object Sessions extends Controller with LoginLogout with AuthConfigImpl {
     SignInForm.form.bindFromRequest.fold(
       formWithErrors => Future.successful(Redirect(routes.Application.showSignInForm()).flashing("danger" -> "Those credentials are not valid.")),
       user => Account.authenticate(user.get.email, user.get.password) match {
-        case account => {
+        case Some(account: Account) =>
           //TODO always set cookie to be refactored
           val req = request.copy(tags = request.tags + ("rememberme" -> "true"))
-          gotoLoginSucceeded(account.get._id)(req, defaultContext).map(_.withSession("rememberme" -> "true"))
-        }
+          gotoLoginSucceeded(account._id)(req, defaultContext).map(_.withSession("rememberme" -> "true"))
       }
     )
   }

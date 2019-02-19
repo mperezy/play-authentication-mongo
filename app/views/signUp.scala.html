@@ -12,6 +12,8 @@
             <h1 class="h3 mb-3 font-weight-normal">Scala Authentication - Sign Up</h1>
         </div>
 
+        @request.flash.data.map { case (name, value) => @alertMessage(name, value) }
+
         <div class="form-group @if(formSignUp("firstName").hasErrors) {has-error}">
             <label for="@formSignUp("firstName").id" class="col-sm-2 col-form-label">Name</label>
             <div class="input-group">
