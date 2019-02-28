@@ -23,6 +23,7 @@ import play.modules.reactivemongo.json.BSONFormats._
 import reactivemongo.bson.BSONObjectID
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import controllers.Encryption.Encrypter
 
 object AccountsCtrl extends Controller with MongoController  with AuthElement with AuthConfigImpl {
   private final val logger: Logger = LoggerFactory.getLogger(classOf[Account])
@@ -131,7 +132,7 @@ object AccountsCtrl extends Controller with MongoController  with AuthElement wi
 
   def createUser = Action.async { implicit request =>
     SignUpForm.form.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest("invalid json")),
+      formWithErrors => Future.successful(Redirect(routes.Application.showSignUpForm()). flashing("danger" -> "Oops, something went wrong. Please re-fill the fields.")),
       newUser => {
         Account.findByEmail(newUser.email) match {
           case Some(account: Account) => Future.successful(Redirect(routes.Application.showSignUpForm()).flashing("danger" -> s"The user with ${newUser.email} is already exists."))

@@ -11,7 +11,7 @@ import scala.concurrent.Future
 
 object Application extends Controller with AuthenticationElement with AuthConfigImpl {
 
-  val emptyAccount = new Account(Some(BSONObjectID.generate), Some(""), "", Some(""), Some(""), "", Some(""), Some(new DateTime()))
+  val emptyAccount = new Account(Some(BSONObjectID.generate), Some(""), "", Some(""), Some(""), "", Some(""), Some(""))
 
   def showSignInForm = Action.async { implicit request =>
     request.session.get("rememberme") match {

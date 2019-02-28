@@ -16,7 +16,7 @@ object SignUpForm {
       "lastName" -> optional(nonEmptyText),
       "password" -> nonEmptyText,
       "avatar_path" -> optional(nonEmptyText),
-      "update_date" -> optional(jodaDate)
+      "update_date" -> optional(nonEmptyText)
     )(Account.apply)(Account.unapply)
   )
 }
