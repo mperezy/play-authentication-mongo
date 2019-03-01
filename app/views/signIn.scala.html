@@ -4,6 +4,7 @@
 
 @import play.api.mvc.Flash
 @import helper._
+@import _forms.signinTemplate
 
 @main("SignIn Page - Play Authentication", account){
     @form(routes.Sessions.authenticate, 'role -> "form", 'class -> "form-signin") {
@@ -16,25 +17,9 @@
 
         @request.flash.data.map { case (name, value) => @alertMessage(name, value) }
 
-        <div class="form-group @if(formLogin("email").hasErrors) {has-error}">
-            <label for="@formLogin("email").id" class="col-sm-2 col-form-label">Email</label>
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <div class="input-group-text"><span class="oi oi-envelope-closed"></span></div>
-                </div>
-                <input id="@formLogin("email").id" name="@formLogin("email").name" value="@formLogin("email").value.getOrElse("")" class="form-control" placeholder="Type it here..." type="text" required>
-            </div>
-        </div>
+        @signinTemplate(formLogin, "email", "Email", "Type it here...", "email")
+        @signinTemplate(formLogin, "password", "Password", "Don't worry, will be our secret...", "password")
 
-        <div class="form-group @if(formLogin("password").hasErrors) {has-error}">
-            <label for="@formLogin("password").id" class="col-sm-2 col-form-label">Password</label>
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <div class="input-group-text"><span class="oi oi-key"></span></div>
-                </div>
-                <input id="@formLogin("password").id" name="@formLogin("password").name" value="@formLogin("password").value.getOrElse("")" class="form-control" placeholder="Don't worry, will be our secret..." type="password" required>
-            </div>
-        </div>
         <small>Don't have any account yet? Please <a href="@routes.Application.showSignUpForm()">sign up</a></small>
         <br>
         <br>

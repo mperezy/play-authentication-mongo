@@ -1,0 +1,18 @@
+@(formData: Form[Option[Account]], formField: String, label: String, placeholder: String, typeInput: String)
+
+@spanIcon = @{
+    formField match {
+        case "email" => "envelope-closed"
+        case "password" => "key"
+    }
+}
+
+<div class="form-group @if(formData(formField).hasErrors) {has-error}">
+    <label for="@formData(formField).id" class="col-sm-2 col-form-label">@label</label>
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <div class="input-group-text"><span class="oi oi-@spanIcon"></span></div>
+        </div>
+        <input id="@formData(formField).id" name="@formData(formField).name" value="@formData(formField).value.getOrElse("")" class="form-control" placeholder="@placeholder" type="@typeInput" required>
+    </div>
+</div>

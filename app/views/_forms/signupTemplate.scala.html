@@ -1,0 +1,32 @@
+@(formData: Form[Account], formField: String, label: String, placeholder: String, typeInput: String, account: Account)
+
+@spanIcon = @{
+    formField match {
+        case "firstName" | "lastName" => "person"
+        case "email" => "envelope-closed"
+        case "password" => "key"
+        case "role" => "tags"
+    }
+}
+
+@formValue = @{
+    formField match {
+        case "firstName" => account.firstName
+        case "lastName" => account.lastName
+        case "email" => account.email
+        case _ => ""
+    }
+}
+
+<div class="form-group @if(formData(formField).hasErrors) {has-error}">
+    <label for="@formData(formField).id" class="col-sm-2 col-form-label">@label</label>
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <div class="input-group-text"><span class="oi oi-@spanIcon"></span></div>
+        </div>
+        <input id="@formData(formField).id" name="@formData(formField).name" value="@formData(formField).value.getOrElse(formValue)" class="form-control" placeholder="@placeholder" type="@typeInput" required>
+    </div>
+    @if(formField == "email") {
+        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+    }
+</div>
