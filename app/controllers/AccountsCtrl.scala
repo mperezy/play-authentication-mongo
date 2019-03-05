@@ -33,6 +33,26 @@ object AccountsCtrl extends Controller with MongoController  with AuthElement wi
 
   import models.Account._
 
+  private def flashMessageSplitted(flashMessage: String, index: Int) = {
+    if(flashMessage.contains("#")) {
+      flashMessage.split("#").toList(index)
+    } else {
+      if(index == 1) {
+        ""
+      } else {
+        flashMessage
+      }
+    }
+  }
+
+  private def userDataSplitter(userData: String, index: Int) = {
+    if(userData.contains("&")) {
+      userData.split("&").toList(index)
+    } else {
+      ""
+    }
+  }
+
   def adminCheck = StackAction(AuthorityKey -> Admin){
     implicit request => {
       loggedIn match {
@@ -133,11 +153,19 @@ object AccountsCtrl extends Controller with MongoController  with AuthElement wi
 
   def createUser = Action.async { implicit request =>
     SignUpForm.form.bindFromRequest.fold(
-      formWithErrors => Future.successful(Redirect(routes.Application.showSignUpForm()) flashing("danger" -> ConvertToFlashing.convertionFormAccount(formWithErrors))),
+      formWithErrors => {
+        val retrievedFlashMessage = ConvertToFlashing.convertionFormAccount(formWithErrors)
+        val flashMessage = flashMessageSplitted(retrievedFlashMessage, 0)
+        val userNameFromFlashMessage = userDataSplitter(flashMessageSplitted(retrievedFlashMessage, 1), 0)
+        val userLastNameFromFlashMessage = userDataSplitter(flashMessageSplitted(retrievedFlashMessage, 1), 1)
+        val userEmailFlashMessage = userDataSplitter(flashMessageSplitted(retrievedFlashMessage, 1), 2)
+        
+        Future.successful(Redirect(routes.Application.showSignUpForm()) flashing("danger" -> flashMessage) withSession("firstname" -> userNameFromFlashMessage, "lastname" -> userLastNameFromFlashMessage, "useremail" -> userEmailFlashMessage))
+      },
       newUser => {
         Account.findByEmail(newUser.email) match {
           case Some(account: Account) => Future.successful(Redirect(routes.Application.showSignUpForm()).flashing("danger" -> s"The user with ${newUser.email} is already exists."))
-          case _ =>
+          case _ => {
             Await.result(Account.create(newUser).map {
               lastError => println(s"successfully inserted the user: ${newUser.firstName} ${newUser.password} with LastError: $lastError")
             }, 1.seconds)
@@ -146,6 +174,7 @@ object AccountsCtrl extends Controller with MongoController  with AuthElement wi
                 val req = request.copy(tags = request.tags + ("rememberme" -> "true"))
                 gotoLoginSucceeded(account.get._id)(req, defaultContext).map(_.withSession("rememberme" -> "true"))
             }
+          }
         }
       }
     )

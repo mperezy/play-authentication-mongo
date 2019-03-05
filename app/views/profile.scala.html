@@ -10,10 +10,10 @@
             <h1 class="h3 mb-3 font-weight-normal">Profile</h1>
         </div>
 
-        @signupTemplate(formProfile, "firstName", "Name", "Type it here...", "text", account)
-        @signupTemplate(formProfile, "lastName", "Last Name", "Type it here...", "text", account)
-        @signupTemplate(formProfile, "email", "Email", "Type it here...", "email", account)
-        @signupTemplate(formProfile, "password", "Password", "Don't worry, will be our secret...", "password", account)
+        @signupTemplate(formProfile, "firstName", "Name", "Type it here...", account.firstName.getOrElse(""), "text")
+        @signupTemplate(formProfile, "lastName", "Last Name", "Type it here...", account.lastName.getOrElse(""), "text")
+        @signupTemplate(formProfile, "email", "Email", "Type it here...", account.email, "email")
+        @signupTemplate(formProfile, "password", "Password", "Don't worry, will be our secret...", "", "password")
 
         <br>
         <br>

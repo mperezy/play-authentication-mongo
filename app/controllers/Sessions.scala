@@ -15,7 +15,7 @@ object Sessions extends Controller with LoginLogout with AuthConfigImpl {
 
   private final val logger: Logger = LoggerFactory.getLogger(classOf[Account])
 
-  def splitter(flashMessage: String, index: Int) = {
+  private def splitter(flashMessage: String, index: Int) = {
     if(flashMessage.contains("#")) {
       flashMessage.split("#").toList(index)
     } else {
@@ -51,6 +51,7 @@ object Sessions extends Controller with LoginLogout with AuthConfigImpl {
                 gotoLoginSucceeded(account.get._id)(req, defaultContext).map(_.withSession("rememberme" -> "true"))
             }
           }
+          case _ => Future.successful(Redirect(routes.Application.showSignInForm()))
         }
       }
     )

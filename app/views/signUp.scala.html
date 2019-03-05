@@ -15,10 +15,10 @@
 
         @request.flash.data.map { case (name, value) => @alertMessage(name, value) }
 
-        @signupTemplate(formSignUp, "firstName", "Name", "Type it here...", "text", account)
-        @signupTemplate(formSignUp, "lastName", "Last Name", "Type it here...", "text", account)
-        @signupTemplate(formSignUp, "email", "Email", "Type it here...", "email", account)
-        @signupTemplate(formSignUp, "password", "Password", "Don't worry, will be our secret...", "password", account)
+        @signupTemplate(formSignUp, "firstName", "Name", "Type it here...", request.session.data.getOrElse("firstname", ""), "text")
+        @signupTemplate(formSignUp, "lastName", "Last Name", "Type it here...", request.session.data.getOrElse("lastname", ""), "text")
+        @signupTemplate(formSignUp, "email", "Email", "Type it here...", request.session.data.getOrElse("useremail", ""), "email")
+        @signupTemplate(formSignUp, "password", "Password", "Don't worry, will be our secret...", "", "password")
 
         <br>
         <small>Do you already have an account? Please <a href="@routes.Application.showSignInForm()">sign in</a></small>
