@@ -1,4 +1,5 @@
-@(formData: Form[Option[Account]], formField: String, label: String, placeholder: String, typeInput: String)
+@import forms.SignInForm.LoginAccount
+@(formData: Form[LoginAccount], formField: String, label: String, placeholder: String, defaultValue: String, typeInput: String)
 
 @spanIcon = @{
     formField match {
@@ -13,6 +14,6 @@
         <div class="input-group-prepend">
             <div class="input-group-text"><span class="oi oi-@spanIcon"></span></div>
         </div>
-        <input id="@formData(formField).id" name="@formData(formField).name" value="@formData(formField).value.getOrElse("")" class="form-control" placeholder="@placeholder" type="@typeInput" required>
+        <input id="@formData(formField).id" name="@formData(formField).name" value="@defaultValue" class="form-control" placeholder="@placeholder" type="@typeInput" required>
     </div>
 </div>

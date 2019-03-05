@@ -18,5 +18,10 @@ object SignUpForm {
       "avatar_path" -> optional(nonEmptyText),
       "update_date" -> optional(nonEmptyText)
     )(Account.apply)(Account.unapply)
+    .verifying("Too few characters. It should have more than 3 characters.", user => !isShortPassword(user.password, 4))
   )
+
+  def isShortPassword(string: String, min: Int): Boolean = {
+    if (string.length < min) true else false
+  }
 }

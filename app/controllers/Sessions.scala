@@ -9,10 +9,23 @@ import play.api.mvc._
 import services.AuthConfigImpl
 import scala.concurrent.Future
 import controllers.Encryption.Encrypter
+import controllers.FormErrorConvert.ConvertToFlashing
 
 object Sessions extends Controller with LoginLogout with AuthConfigImpl {
 
   private final val logger: Logger = LoggerFactory.getLogger(classOf[Account])
+
+  def splitter(flashMessage: String, index: Int) = {
+    if(flashMessage.contains("#")) {
+      flashMessage.split("#").toList(index)
+    } else {
+      if(index == 1) {
+        ""
+      } else {
+        flashMessage
+      }
+    }
+  }
 
   def logout = Action.async { implicit request =>
     gotoLogoutSucceeded.map(_.flashing(
@@ -22,15 +35,24 @@ object Sessions extends Controller with LoginLogout with AuthConfigImpl {
 
   def authenticate = Action.async { implicit request =>
     SignInForm.form.bindFromRequest.fold(
-      formWithErrors => Future.successful(Redirect(routes.Application.showSignInForm()).flashing("danger" -> "Those credentials are not valid.")),
+      formWithErrors => {
+        val retrievedFlashMessage = ConvertToFlashing.convertionFormLoginAccount(formWithErrors)
+        val flashMessage = splitter(retrievedFlashMessage, 0)
+        val emailFromFlashMessage = splitter(retrievedFlashMessage, 1)
+
+        Future.successful(Redirect(routes.Application.showSignInForm()) flashing("danger" -> flashMessage) withSession("email" -> emailFromFlashMessage))
+      },
       user => {
-        Account.authenticate(user.get.email, Encrypter.decrypt(user.get.password)) match {
-        case Some(account: Account) =>
-          //TODO always set cookie to be refactored
-          val req = request.copy(tags = request.tags + ("rememberme" -> "true"))
-          gotoLoginSucceeded(account._id)(req, defaultContext).map(_.withSession("rememberme" -> "true"))
-        case None => Future.successful(Redirect(routes.Application.showSignInForm()).flashing("danger" -> s"We're sorry, that user is not exists."))
-      }}
+        Account.findByEmail(user.email) match {
+          case Some(account: Account) => {
+            Account.authenticate(user.email, user.password) match {
+              case account =>
+                val req = request.copy(tags = request.tags + ("rememberme" -> "true"))
+                gotoLoginSucceeded(account.get._id)(req, defaultContext).map(_.withSession("rememberme" -> "true"))
+            }
+          }
+        }
+      }
     )
   }
 }

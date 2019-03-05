@@ -1,6 +1,5 @@
-@import forms.SignInForm.LoginUser
-
-@(formLogin: Form[Option[Account]], account: Account)(implicit request: RequestHeader)
+@import forms.SignInForm.LoginAccount
+@(formLogin: Form[LoginAccount], account: Account)(implicit request: RequestHeader)
 
 @import play.api.mvc.Flash
 @import helper._
@@ -17,8 +16,8 @@
 
         @request.flash.data.map { case (name, value) => @alertMessage(name, value) }
 
-        @signinTemplate(formLogin, "email", "Email", "Type it here...", "email")
-        @signinTemplate(formLogin, "password", "Password", "Don't worry, will be our secret...", "password")
+        @signinTemplate(formLogin, "email", "Email", "Type it here...", request.session.data.get("email").getOrElse(""), "email")
+        @signinTemplate(formLogin, "password", "Password", "Don't worry, will be our secret...", "", "password")
 
         <small>Don't have any account yet? Please <a href="@routes.Application.showSignUpForm()">sign up</a></small>
         <br>
