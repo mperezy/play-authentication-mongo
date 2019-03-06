@@ -1,4 +1,4 @@
-package controllers.Encryption
+package controllers.encryption
 
 import java.security.MessageDigest
 import java.util

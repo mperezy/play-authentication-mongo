@@ -1,4 +1,4 @@
-package controllers.FormErrorConvert
+package controllers.formerrorconvert
 
 import forms.SignInForm.LoginAccount
 import models.Account
@@ -13,7 +13,6 @@ object ConvertToFlashing {
     }
     result
   }
-
 
   def convertionFormLoginAccount(form: Form[LoginAccount]) = {
     var result = ""

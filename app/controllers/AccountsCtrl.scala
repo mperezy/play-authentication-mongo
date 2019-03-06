@@ -23,8 +23,9 @@ import play.modules.reactivemongo.json.BSONFormats._
 import reactivemongo.bson.BSONObjectID
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import controllers.Encryption.Encrypter
-import controllers.FormErrorConvert.ConvertToFlashing
+import controllers.encryption.Encrypter
+import controllers.formerrorconvert.ConvertToFlashing
+import controllers.splitter.FlashSplitter
 
 object AccountsCtrl extends Controller with MongoController  with AuthElement with AuthConfigImpl {
   private final val logger: Logger = LoggerFactory.getLogger(classOf[Account])
@@ -32,26 +33,6 @@ object AccountsCtrl extends Controller with MongoController  with AuthElement wi
   def collection: JSONCollection = db.collection[JSONCollection]("Accounts")
 
   import models.Account._
-
-  private def flashMessageSplitted(flashMessage: String, index: Int) = {
-    if(flashMessage.contains("#")) {
-      flashMessage.split("#").toList(index)
-    } else {
-      if(index == 1) {
-        ""
-      } else {
-        flashMessage
-      }
-    }
-  }
-
-  private def userDataSplitter(userData: String, index: Int) = {
-    if(userData.contains("&")) {
-      userData.split("&").toList(index)
-    } else {
-      ""
-    }
-  }
 
   def adminCheck = StackAction(AuthorityKey -> Admin){
     implicit request => {
@@ -155,10 +136,10 @@ object AccountsCtrl extends Controller with MongoController  with AuthElement wi
     SignUpForm.form.bindFromRequest.fold(
       formWithErrors => {
         val retrievedFlashMessage = ConvertToFlashing.convertionFormAccount(formWithErrors)
-        val flashMessage = flashMessageSplitted(retrievedFlashMessage, 0)
-        val userNameFromFlashMessage = userDataSplitter(flashMessageSplitted(retrievedFlashMessage, 1), 0)
-        val userLastNameFromFlashMessage = userDataSplitter(flashMessageSplitted(retrievedFlashMessage, 1), 1)
-        val userEmailFlashMessage = userDataSplitter(flashMessageSplitted(retrievedFlashMessage, 1), 2)
+        val flashMessage = FlashSplitter.flashMessageSplitted(retrievedFlashMessage, 0)
+        val userNameFromFlashMessage = FlashSplitter.userDataSplitter(FlashSplitter.flashMessageSplitted(retrievedFlashMessage, 1), 0)
+        val userLastNameFromFlashMessage = FlashSplitter.userDataSplitter(FlashSplitter.flashMessageSplitted(retrievedFlashMessage, 1), 1)
+        val userEmailFlashMessage = FlashSplitter.userDataSplitter(FlashSplitter.flashMessageSplitted(retrievedFlashMessage, 1), 2)
         
         Future.successful(Redirect(routes.Application.showSignUpForm()) flashing("danger" -> flashMessage) withSession("firstname" -> userNameFromFlashMessage, "lastname" -> userLastNameFromFlashMessage, "useremail" -> userEmailFlashMessage))
       },
@@ -171,8 +152,7 @@ object AccountsCtrl extends Controller with MongoController  with AuthElement wi
             }, 1.seconds)
             Account.authenticate(newUser.email, newUser.password) match {
               case account =>
-                val req = request.copy(tags = request.tags + ("rememberme" -> "true"))
-                gotoLoginSucceeded(account.get._id)(req, defaultContext).map(_.withSession("rememberme" -> "true"))
+                gotoLoginSucceeded(account.get._id).map(_.withSession("rememberme" -> "true"))
             }
           }
         }

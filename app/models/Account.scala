@@ -13,7 +13,7 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 import play.modules.reactivemongo.json.BSONFormats._
 import play.api.libs.json.Json
-import controllers.Encryption.Encrypter
+import controllers.encryption.Encrypter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

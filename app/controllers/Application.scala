@@ -27,12 +27,11 @@ object Application extends Controller with AuthenticationElement with AuthConfig
     }
   }
 
-  def showDashboard = StackAction { implicit request =>
-    val user: User = loggedIn
-    Ok(views.html.dashboard(user))
+  def showDashboard = AsyncStack { implicit request =>
+    Future.successful(Ok(views.html.dashboard(loggedIn)))
   }
 
-  def showProfile = StackAction { implicit request =>
-    Ok(views.html.profile(loggedIn, SignUpForm.form))
+  def showProfile = AsyncStack { implicit request =>
+    Future.successful(Ok(views.html.profile(loggedIn, SignUpForm.form)))
   }
 }
