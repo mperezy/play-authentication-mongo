@@ -7,7 +7,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc._
 import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.collection.JSONCollection
-import reactivemongo.bson.{BSONDocument, BSONObjectID}
+import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONObjectID}
 import reactivemongo.core.commands.LastError
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
@@ -24,15 +24,15 @@ case class Account(
                   firstName: Option[String] = None,
                   lastName: Option[String] = None,
                   password: String,
-                  avatar_path: Option[String] = None,
-                  update_date: Option[String] = None
-                  )
+                  create_date: Option[BSONDateTime] = Some(
+                    BSONDateTime(DateTime.now.getMillis)
+                  ),
+                  update_date: Option[BSONDateTime] = None)
 
 object Account extends Controller with MongoController {
 
-  implicit val AccountFormat = Json.format[Account] ;
+  implicit val AccountFormat = Json.format[Account]
   private final val logger: Logger = LoggerFactory.getLogger(classOf[Account])
-  private val currentLocalDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm").format(LocalDateTime.now())
   def collection: JSONCollection = db.collection[JSONCollection]("Accounts")
 
   def authenticate(email: String, password: String): Option[Account] = {
@@ -56,22 +56,26 @@ object Account extends Controller with MongoController {
     Await.result(cursor.headOption, Duration(5, TimeUnit.SECONDS))
   }
 
-  /*def findAll(): Seq[Account] = {
-    val cursor  = collection.find(
-        Json.obj()
-    ).sort(Json.obj("update_date" -> -1))
-       .cursor[Account].collect[List]()
-    Await.result(cursor, Duration(5, TimeUnit.SECONDS))
-  }*/
-
   def create(account: Account): Future[LastError] = {
-    val updatedUser = account.copy(password = Encrypter.encrypt(account.password), update_date = Some(currentLocalDateTime))
-    collection.insert(updatedUser)
+    val createdUser =
+      account.copy(
+        password = Encrypter.encrypt(account.password),
+        create_date = Some(BSONDateTime(DateTime.now.getMillis))
+      )
+    collection.insert(createdUser)
   }
 
   def update(account: Account): Future[LastError] = {
-    val updatedUser = account.copy(password = Encrypter.encrypt(account.password), update_date = Some(currentLocalDateTime))
+    val updatedUser = BSONDocument(
+      "$set" -> BSONDocument(
+        "email" -> account.email,
+        "firstName" -> account.firstName,
+        "lastName" -> account.lastName,
+        "password" -> account.password,
+        "update_date" -> BSONDateTime(DateTime.now.getMillis)
+      )
+    )
     val selec = BSONDocument("email" -> account.email)
-    collection.update(selec, updatedUser, upsert = true)
+    collection.update(selec, updatedUser)
   }
 }

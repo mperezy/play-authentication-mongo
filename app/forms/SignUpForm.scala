@@ -4,7 +4,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.format.Formats._
 import models.Account
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.bson.{BSONDateTime, BSONObjectID}
 
 object SignUpForm {
 
@@ -18,10 +18,10 @@ object SignUpForm {
       "firstName" -> optional(nonEmptyText),
       "lastName" -> optional(nonEmptyText),
       "password" -> nonEmptyText,
-      "avatar_path" -> optional(nonEmptyText),
-      "update_date" -> optional(nonEmptyText)
+      "create_date" -> ignored(Option.empty[BSONDateTime]),
+      "update_date" -> ignored(Option.empty[BSONDateTime])
     )(Account.apply)(Account.unapply)
-    .verifying(fewCharactersErrorMessage, user => !isShortPassword(user, 4))
+      .verifying(fewCharactersErrorMessage, user => !isShortPassword(user, 4))
   )
 
   def isShortPassword(user: Account, min: Int): Boolean = {
