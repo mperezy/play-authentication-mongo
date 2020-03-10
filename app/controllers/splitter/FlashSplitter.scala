@@ -1,25 +1,19 @@
 package controllers.splitter
 
 object FlashSplitter {
+  var emptyString = ""
 
-  def flashMessageSplitted(flashMessage: String, index: Int) = {
-    if(flashMessage.contains("#")) {
-      flashMessage.split("#").toList(index)
-    } else {
-      if(index == 1) {
-        ""
+  def split(isFlash: Boolean, data: String, index: Int) = {
+    if(isFlash) {
+      if(data.contains("#")) {
+        data.split("#").toList(index)
       } else {
-        flashMessage
+        if(index == 1) emptyString
+        else data
       }
-    }
-  }
-
-  def userDataSplitter(userData: String, index: Int) = {
-    if(userData.contains("&")) {
-      userData.split("&").toList(index)
     } else {
-      ""
+      if(data.contains("&")) data.split("&").toList(index)
+      else emptyString
     }
   }
-
 }

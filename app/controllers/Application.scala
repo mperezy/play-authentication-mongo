@@ -10,34 +10,25 @@ import scala.concurrent.Future
 
 object Application extends Controller with AuthenticationElement with AuthConfigImpl {
 
-  val emptyAccount = new Account(
-    Some(BSONObjectID.generate),
-    Some(""),
-    "",
-    Some(""),
-    Some(""),
-    ""
-  )
-
   def showSignInForm = Action.async { implicit request =>
     request.session.get("rememberme") match {
       case Some(string) => Future.successful(Redirect(routes.Application.showDashboard()))
-      case _ => Future.successful(Ok(views.html.signIn(SignInForm.form, emptyAccount)))
+      case _ => Future.successful(Ok(views.html.signIn(SignInForm.form, None)))
     }
   }
 
   def showSignUpForm = Action.async { implicit request =>
     request.session.get("rememberme") match {
       case Some(string) => Future.successful(Redirect(routes.Application.showDashboard()))
-      case _ => Future.successful(Ok(views.html.signUp(SignUpForm.form, emptyAccount)))
+      case _ => Future.successful(Ok(views.html.signUp(SignUpForm.form, None)))
     }
   }
 
   def showDashboard = AsyncStack { implicit request =>
-    Future.successful(Ok(views.html.dashboard(loggedIn)))
+    Future.successful(Ok(views.html.dashboard(Some(loggedIn))))
   }
 
   def showProfile = AsyncStack { implicit request =>
-    Future.successful(Ok(views.html.profile(loggedIn, SignUpForm.form)))
+    Future.successful(Ok(views.html.profile(Some(loggedIn), SignUpForm.form)))
   }
 }

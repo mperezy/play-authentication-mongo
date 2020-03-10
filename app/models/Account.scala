@@ -17,42 +17,40 @@ import controllers.encryption.Encrypter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-case class Account(
-                  _id: Option[BSONObjectID] = None,
-                  role: Option[String] = None,
-                  email: String,
-                  firstName: Option[String] = None,
-                  lastName: Option[String] = None,
-                  password: String,
-                  create_date: Option[BSONDateTime] = Some(
-                    BSONDateTime(DateTime.now.getMillis)
-                  ),
-                  update_date: Option[BSONDateTime] = None)
+case class Account(_id: Option[BSONObjectID] = None,
+                   role: Option[String] = None,
+                   email: String,
+                   firstName: Option[String] = None,
+                   lastName: Option[String] = None,
+                   password: String,
+                   create_date: Option[BSONDateTime] = Some(
+                     BSONDateTime(DateTime.now.getMillis)
+                   ),
+                   update_date: Option[BSONDateTime] = None)
 
 object Account extends Controller with MongoController {
 
   implicit val AccountFormat = Json.format[Account]
   private final val logger: Logger = LoggerFactory.getLogger(classOf[Account])
-  def collection: JSONCollection = db.collection[JSONCollection]("Accounts")
+  def collection: JSONCollection = db.collection[JSONCollection]("accounts")
 
   def authenticate(email: String, password: String): Option[Account] = {
-    val cursor  = collection.find(
-      Json.obj("email"-> email, "password"-> Encrypter.encrypt(password))
-    ).cursor[Account]
+    val cursor = collection
+      .find(
+        Json.obj("email" -> email, "password" -> Encrypter.encrypt(password))
+      )
+      .cursor[Account]
     Await.result(cursor.headOption, Duration(5, TimeUnit.SECONDS))
   }
 
-  def findByEmail(email: String): Option[Account] =  {
-    val cursor  = collection.find(
-        Json.obj("email"->email)
-    ).cursor[Account]
+  def findByEmail(email: String): Option[Account] = {
+    val cursor = collection.find(Json.obj("email" -> email)).cursor[Account]
     Await.result(cursor.headOption, Duration(5, TimeUnit.SECONDS))
   }
 
   def findById(id: String): Option[Account] = {
-   val cursor  = collection.find(
-        Json.obj("_id" -> BSONObjectID(id))
-   ).cursor[Account]
+    val cursor =
+      collection.find(Json.obj("_id" -> BSONObjectID(id))).cursor[Account]
     Await.result(cursor.headOption, Duration(5, TimeUnit.SECONDS))
   }
 

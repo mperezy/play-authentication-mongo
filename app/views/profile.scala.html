@@ -1,4 +1,4 @@
-@(account: Account, formProfile: Form[Account])(implicit request: RequestHeader)
+@(account: Option[Account], formProfile: Form[Account])(implicit request: RequestHeader)
 
 @import helper._
 @import _forms.signupTemplate
@@ -10,10 +10,15 @@
             <h1 class="h3 mb-3 font-weight-normal">Profile</h1>
         </div>
 
-        @signupTemplate(formProfile, "firstName", "Name", "Type it here...", account.firstName.getOrElse(""), "text")
-        @signupTemplate(formProfile, "lastName", "Last Name", "Type it here...", account.lastName.getOrElse(""), "text")
-        @signupTemplate(formProfile, "email", "Email", "Type it here...", account.email, "email")
-        @signupTemplate(formProfile, "password", "Password", "Don't worry, will be our secret...", "", "password")
+        @account match {
+            case Some(currentAccount) => {
+                @signupTemplate(formProfile, "firstName", "Name", "Type it here...", currentAccount.firstName.getOrElse(""), "text")
+                @signupTemplate(formProfile, "lastName", "Last Name", "Type it here...", currentAccount.lastName.getOrElse(""), "text")
+                @signupTemplate(formProfile, "email", "Email", "Type it here...", currentAccount.email, "email")
+                @signupTemplate(formProfile, "password", "Password", "Don't worry, will be our secret...", "", "password")
+            }
+            case _ => { "" }
+        }
 
         <br>
         <br>

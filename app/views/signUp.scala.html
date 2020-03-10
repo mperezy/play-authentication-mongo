@@ -1,4 +1,4 @@
-@(formSignUp: Form[Account], account: Account)(implicit request: RequestHeader)
+@(formSignUp: Form[Account], account: Option[Account])(implicit request: RequestHeader)
 
 @import play.api.mvc.Flash._
 @import models.Role._

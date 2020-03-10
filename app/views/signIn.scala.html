@@ -1,5 +1,5 @@
 @import forms.SignInForm.LoginAccount
-@(formLogin: Form[LoginAccount], account: Account)(implicit request: RequestHeader)
+@(formLogin: Form[LoginAccount], account: Option[Account])(implicit request: RequestHeader)
 
 @import play.api.mvc.Flash
 @import helper._

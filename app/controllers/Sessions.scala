@@ -25,9 +25,9 @@ object Sessions extends Controller with LoginLogout with AuthConfigImpl {
   def authenticate = Action.async { implicit request =>
     SignInForm.form.bindFromRequest.fold(
       formWithErrors => {
-        val retrievedFlashMessage = ConvertToFlashing.convertionFormLoginAccount(formWithErrors)
-        val flashMessage = FlashSplitter.flashMessageSplitted(retrievedFlashMessage, 0)
-        val emailFromFlashMessage = FlashSplitter.flashMessageSplitted(retrievedFlashMessage, 1)
+        val retrievedFlashMessage = ConvertToFlashing.convert(formWithErrors)
+        val flashMessage = FlashSplitter.split(true, retrievedFlashMessage, 0)
+        val emailFromFlashMessage = FlashSplitter.split(true, retrievedFlashMessage, 1)
 
         Future.successful(Redirect(routes.Application.showSignInForm()) flashing("danger" -> flashMessage) withSession("email" -> emailFromFlashMessage))
       },

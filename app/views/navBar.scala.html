@@ -1,4 +1,4 @@
-@(account: Account)(implicit request: RequestHeader)
+@(account: Option[Account])(implicit request: RequestHeader)
 
 <header>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
@@ -16,21 +16,24 @@
                 </li>
             </ul>
 
-            @if(account.email != ""){
-                <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
-                    <li class="nav-item dropdown">
-                        <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            @account.firstName @account.lastName
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bd-versions">
-                            @if(request.uri != "/profile") {
-                                <a class="dropdown-item" href="@routes.Application.showProfile()">Profile</a>
-                                <div class="dropdown-divider"></div>
-                            }
-                            <a class="dropdown-item" href="@routes.Sessions.logout()">Logout</a>
-                        </div>
-                    </li>
-                </ul>
+            @account match {
+                case Some(currentAccount) => {
+                    <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
+                        <li class="nav-item dropdown">
+                            <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @currentAccount.firstName @currentAccount.lastName
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bd-versions">
+                                @if(request.uri != "/profile") {
+                                    <a class="dropdown-item" href="@routes.Application.showProfile()">Profile</a>
+                                    <div class="dropdown-divider"></div>
+                                }
+                                <a class="dropdown-item" href="@routes.Sessions.logout()">Logout</a>
+                            </div>
+                        </li>
+                    </ul>
+                }
+                case _ => { "" }
             }
         </div>
     </nav>
