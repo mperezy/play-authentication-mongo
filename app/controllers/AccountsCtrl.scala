@@ -1,31 +1,29 @@
 package controllers
 
 import controllers.Sessions.gotoLoginSucceeded
+import controllers.encryption.Encrypter
 import forms.SignUpForm
+import jp.t2v.lab.play2.auth.AuthElement
+import models.Account
+import models.Role.{Admin, Normal}
+import org.slf4j.{Logger, LoggerFactory}
 import play.api.Play
 import play.api.mvc._
 import play.api.libs.json.Json
 import play.api.mvc.Controller
-import models.Account
-import reactivemongo.core.protocol.QueryFlags
-import reactivemongo.api.QueryOpts
-import jp.t2v.lab.play2.auth.AuthElement
-import models.Role.{Admin, Normal}
-import play.modules.reactivemongo.json.collection.JSONCollection
-import reactivemongo.bson.BSONDocument
-import services.AuthConfigImpl
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.modules.reactivemongo.MongoController
-import org.slf4j.{Logger, LoggerFactory}
-import reactivemongo.api.Cursor
 import play.api.libs.json._
 import play.modules.reactivemongo.json.BSONFormats._
+import play.modules.reactivemongo.json.collection.JSONCollection
+import play.modules.reactivemongo.MongoController
+import reactivemongo.api.Cursor
+import reactivemongo.api.QueryOpts
 import reactivemongo.bson.BSONObjectID
+import reactivemongo.bson.BSONDocument
+import reactivemongo.core.protocol.QueryFlags
+import services.AuthConfigImpl
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import controllers.encryption.Encrypter
-import controllers.formerrorconvert.ConvertToFlashing
-import controllers.splitter.FlashSplitter
 
 object AccountsCtrl
     extends Controller
@@ -33,7 +31,6 @@ object AccountsCtrl
     with AuthElement
     with AuthConfigImpl {
   private final val logger: Logger = LoggerFactory.getLogger(classOf[Account])
-
   def collection: JSONCollection = db.collection[JSONCollection]("accounts")
 
   import models.Account._
@@ -137,29 +134,23 @@ object AccountsCtrl
     SignUpForm.form.bindFromRequest
       .fold(
         formWithErrors => {
-          val retrievedFlashMessage =
-            ConvertToFlashing.convert(formWithErrors)
-          val flashMessage =
-            FlashSplitter.split(true, retrievedFlashMessage, 0)
-          val userNameFromFlashMessage = FlashSplitter.split(
-            false,
-            FlashSplitter.split(true, retrievedFlashMessage, 1),
-            0
-          )
-          val userLastNameFromFlashMessage = FlashSplitter.split(
-            false,
-            FlashSplitter.split(true, retrievedFlashMessage, 1),
-            1
-          )
-          val userEmailFlashMessage = FlashSplitter.split(
-            false,
-            FlashSplitter.split(true, retrievedFlashMessage, 1),
-            2
-          )
+          val redirectRoute = routes.Application.showSignUpForm()
+          val formDataMapped = formWithErrors.data
+            .filterNot(key => key._1 == "csrfToken" || key._1 == "password")
 
-          Future.successful(
-            Redirect(routes.Application.showSignUpForm()) flashing ("danger" -> flashMessage) withSession ("firstname" -> userNameFromFlashMessage, "lastname" -> userLastNameFromFlashMessage, "useremail" -> userEmailFlashMessage)
-          )
+          Future.successful(formWithErrors.globalError match {
+            case Some(form) => {
+              Redirect(redirectRoute)
+                .flashing("info" -> form.message)
+                .withSession(Session(formDataMapped))
+            }
+            case None =>
+              Redirect(redirectRoute)
+                .flashing("danger" -> "Incorrect email format.")
+                .withSession(
+                  Session(formDataMapped.filter(_._1 != "useremail"))
+                )
+          })
         },
         newUser => {
           Account.findByEmail(newUser.email) match {

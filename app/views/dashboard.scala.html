@@ -1,9 +1,8 @@
 @(account: Option[Account])(implicit request: RequestHeader)
 
 @userFirstName = @{
-    account match {
-        case Some(account) => account.firstName
-        case _ => ""
+    account.fold(""){
+        case user => user.firstName.get
     }
 }
 

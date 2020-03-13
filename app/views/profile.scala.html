@@ -6,15 +6,17 @@
 @main("Profile Page - Play Authentication", account){
     @helper.form(routes.AccountsCtrl.modifyUser, 'role -> "form", 'class -> "form-signin") {
         @helper.CSRF.formField
+
         <div class="text-center mb-4">
+            <img src="@routes.Assets.versioned("images/profile-icon.png")" alt="" width="200" class="mb-4">
             <h1 class="h3 mb-3 font-weight-normal">Profile</h1>
         </div>
 
         @account match {
             case Some(currentAccount) => {
-                @signupTemplate(formProfile, "firstName", "Name", "Type it here...", currentAccount.firstName.getOrElse(""), "text")
-                @signupTemplate(formProfile, "lastName", "Last Name", "Type it here...", currentAccount.lastName.getOrElse(""), "text")
-                @signupTemplate(formProfile, "email", "Email", "Type it here...", currentAccount.email, "email")
+                @signupTemplate(formProfile, "firstname", "Name", "Type it here...", currentAccount.firstName.getOrElse(""), "text")
+                @signupTemplate(formProfile, "lastname", "Last Name", "Type it here...", currentAccount.lastName.getOrElse(""), "text")
+                @signupTemplate(formProfile, "useremail", "Email", "Type it here...", currentAccount.email, "email")
                 @signupTemplate(formProfile, "password", "Password", "Don't worry, will be our secret...", "", "password")
             }
             case _ => { "" }

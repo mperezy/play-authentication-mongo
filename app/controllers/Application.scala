@@ -8,19 +8,29 @@ import reactivemongo.bson.BSONObjectID
 import services.AuthConfigImpl
 import scala.concurrent.Future
 
-object Application extends Controller with AuthenticationElement with AuthConfigImpl {
-
+object Application
+    extends Controller
+    with AuthenticationElement
+    with AuthConfigImpl {
   def showSignInForm = Action.async { implicit request =>
-    request.session.get("rememberme") match {
-      case Some(string) => Future.successful(Redirect(routes.Application.showDashboard()))
-      case _ => Future.successful(Ok(views.html.signIn(SignInForm.form, None)))
+    Future.successful {
+      request.session.get("rememberme") match {
+        case Some(string) =>
+          Redirect(routes.Application.showDashboard())
+        case _ =>
+          Ok(views.html.signIn(SignInForm.form, None))
+      }
     }
   }
 
   def showSignUpForm = Action.async { implicit request =>
-    request.session.get("rememberme") match {
-      case Some(string) => Future.successful(Redirect(routes.Application.showDashboard()))
-      case _ => Future.successful(Ok(views.html.signUp(SignUpForm.form, None)))
+    Future.successful {
+      request.session.get("rememberme") match {
+        case Some(string) =>
+          Redirect(routes.Application.showDashboard())
+        case _ =>
+          Ok(views.html.signUp(SignUpForm.form, None))
+      }
     }
   }
 

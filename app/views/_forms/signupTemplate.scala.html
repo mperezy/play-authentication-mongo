@@ -2,8 +2,8 @@
 
 @spanIcon = @{
     formField match {
-        case "firstName" | "lastName" => "person"
-        case "email" => "envelope-closed"
+        case "firstname" | "lastname" => "person"
+        case "useremail" => "envelope-closed"
         case "password" => "key"
         case "role" => "tags"
     }
@@ -17,7 +17,7 @@
         </div>
         <input id="@formData(formField).id" name="@formData(formField).name" value="@defaultValue" class="form-control" placeholder="@placeholder" type="@typeInput" required>
     </div>
-    @if(formField == "email") {
+    @if(formField == "useremail") {
         <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
     }
 </div>

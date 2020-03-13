@@ -23,6 +23,7 @@ trait AuthConfigImpl extends AuthConfig {
       id match {
         case iD: BSONObjectID        => iD.toString
         case Some(acc: BSONObjectID) => acc.stringify
+        case _                       => ""
       }
     })
   }
