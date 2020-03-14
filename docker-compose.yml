@@ -3,6 +3,7 @@ version: "2"
 
 services:
   play:
+    hostname: play-scala
     container_name: play-scala
     build: .
     volumes:
@@ -18,6 +19,7 @@ services:
     stdin_open: true
 
   mongo:
+    hostname: play-mongo
     container_name: play-mongo
     image: mongo:latest
     ports:
